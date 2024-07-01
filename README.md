@@ -218,3 +218,96 @@ public class UnitTest1
         }
     }
 }
+----------------------
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+
+[TestFixture]
+public class BankAccountTests
+{
+    [Test]
+    public void Deposit_ShouldIncreaseBalance()
+    {
+        // Аргументы для теста
+        double amount = 100;
+        string currency = "USD";
+        BankAccount account = new BankAccount();
+
+        // Вызов метода, который должен быть проверен
+        account.Deposit(amount, currency);
+
+        // Проверка результата
+        Assert.AreEqual(amount, account.GetBalance(currency));
+    }
+
+    [Test]
+    public void Withdraw_ShouldDecreaseBalance()
+    {
+        // Аргументы для теста
+        double amount = 100;
+        string currency = "USD";
+        BankAccount account = new BankAccount();
+        account.Deposit(amount, currency);
+
+        // Вызов метода, который должен быть проверен
+        account.Withdraw(amount, currency);
+
+        // Проверка результата
+        Assert.AreEqual(0, account.GetBalance(currency));
+    }
+
+    [Test]
+    public void Transfer_ShouldDecreaseSenderBalanceAndIncreaseRecipientBalance()
+    {
+        // Аргументы для теста
+        double amount = 100;
+        string currency = "USD";
+        BankAccount sender = new BankAccount();
+        BankAccount recipient = new BankAccount();
+        sender.Deposit(amount, currency);
+
+        // Вызов метода, который должен быть проверен
+        sender.Transfer(amount, currency, recipient);
+
+        // Проверка результата
+        Assert.AreEqual(0, sender.GetBalance(currency));
+        Assert.AreEqual(amount, recipient.GetBalance(currency));
+    }
+
+    [Test]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Withdraw_InsufficientFunds_ShouldThrowException()
+    {
+        // Аргументы для теста
+        double amount = 100;
+        string currency = "USD";
+        BankAccount account = new BankAccount();
+
+        // Вызов метода, который должен вызвать исключение
+        account.Withdraw(amount, currency);
+    }
+
+    [Test]
+    public void GetBalance_ShouldReturnCorrectBalance()
+    {
+        // Аргументы для теста
+        double amount = 100;
+        string currency = "USD";
+        BankAccount account = new BankAccount();
+        account.Deposit(amount, currency);
+
+        // Вызов метода, который должен быть проверен
+        double balance = account.GetBalance(currency);
+
+        // Проверка результата
+        Assert.AreEqual(amount, balance);
+    }
+}
+В этом примере:
+
+BankAccountTests - класс, который содержит тесты для методов класса BankAccount.
+Deposit_ShouldIncreaseBalance, Withdraw_ShouldDecreaseBalance, Transfer_ShouldDecreaseSenderBalanceAndIncreaseRecipientBalance - методы тестов, которые проверяют работу методов Deposit, Withdraw, Transfer соответственно.
+Withdraw_InsufficientFunds_ShouldThrowException - метод теста, который проверяет, что при недостаточном балансе метод Withdraw вызывает исключение InvalidOperationException.
+GetBalance_ShouldReturnCorrectBalance - метод теста, который проверяет, что метод GetBalance возвращает правильный баланс.
+Assert.AreEqual, Assert.Throws<InvalidOperationException> - методы, которые используются для проверки, что возвращаемое значение метода равно ожидаемому значению и что метод Withdraw вызывает исключение InvalidOperationException соответственно.
