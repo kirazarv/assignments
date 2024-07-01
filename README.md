@@ -95,4 +95,127 @@ public class UnitTest1
         // Проверка ожидаемого исключения
         Assert.ThrowsException<DivideByZeroException>(() => Calc.Calculate(a, b, c, x));
     }
-       
+
+
+
+    лаб16
+    namespace UnitTestProjectBankTests2
+{
+    [TestClass]
+    public class UnitTest1
+    {
+        //тестирование метода Debit при вводе корректного значения параметра debitAmount
+        [TestMethod]
+        public void Debit_WithValidAmount_UpdatesBalance()
+        {
+            // Arrange
+            double beginningBalance = 11.99;
+            double debitAmount = 4.55;
+            double expected = 7.44;
+            BankAccount account = new BankAccount("Mr Bryan Walton", beginningBalance, "12345678");
+            // Act
+            account.Debit(debitAmount, account);
+            // Assert
+            double actual = account.Balance;
+            Assert.AreEqual(expected, actual, 0.001, "Account not debited correctly");
+
+        }
+
+        //Тестирование корректности обработки исключения "amount<0" в методе Debit
+        [TestMethod]
+        public void Debit_WhenAmountIsLessThanZero_ShouldThrowArgumentOutOfRange()
+        {
+            // Arrange
+            double beginningBalance = 11.99;
+            double debitAmount = -100.00;
+            BankAccount account = new BankAccount("Mr Bryan Walton", beginningBalance, "12345678");
+            // Act and assert
+            //            Используем метод ThrowsException для подтверждения правильности созданного
+            //исключения.Этот метод приводит к тому, что тест не будет пройден, если не возникнет
+            //исключения ArgumentOutOfRangeException. при debitAmount=-100 возникает исключение=> тест будет пройден
+            Assert.ThrowsException<System.ArgumentOutOfRangeException>(() =>
+            account.Debit(debitAmount, account ));
+        }
+
+        //Тестирование корректности обработки исключения "amount>balance" в методе Debit
+        [TestMethod]
+        public void Debit_WhenAmountIsMoreThanBalance_ShouldThrowArgumentOutOfRange()
+        {
+            // Arrange
+            double beginningBalance = 11.99;
+            double debitAmount = 20.00;
+            BankAccount account = new BankAccount("Mr Bryan Walton", beginningBalance, "12345678");
+            // Act 
+            try
+            {
+                account.Debit(debitAmount,account);
+            }
+            catch (System.ArgumentOutOfRangeException e)
+            {
+                //assert
+                StringAssert.Contains(e.Message, BankAccount.DebitAmountExceedsBalanceMessage);
+                return;
+            }
+            Assert.Fail("The expected exception was not thrown");
+        }
+
+        //custom test №1
+        //Тестирование корректности обработки исключения "invalid chars in name" при создании экземпляра класса BankAccount 
+        [TestMethod]
+        public void NameWithInValidChars()
+        {
+            // Arrange
+            string name = "Ian 1@ Jake McNaughton";
+            //act
+           try 
+           {
+                BankAccount account = new BankAccount(name, 11, "12345678");
+                
+           }
+            catch(Exception e)
+           {
+                //assert
+                StringAssert.Contains(e.Message, BankAccount.InvalidCharactersMessage);
+                return;
+           }
+            Assert.Fail("The expected exception was not thrown");
+
+        }
+
+        //custom test №2
+        //Тестирование метода нахождения минимального значения на балансе
+        [TestMethod]
+        public void FindMin()
+        {
+            // Arrange
+            List<double> values = new List<double> { 11.99, 1.99, 8.99, 5.99 };
+            double expected = 1.99;
+            BankAccount account = new BankAccount("Mr Bryan Walton", 11.99, "12345678");
+            // Act
+            account.Debit(10.00, account);
+            account.Credit(7.00, account);
+            account.Debit(3.00, account);
+            account.FindMinBalance(account.balanceHistory);
+
+            // Assert
+            double actual= account.MinBalance;
+            Assert.AreEqual(expected, actual, 0.001, "min balance is not found correctly");
+        }
+
+        //custom test №3
+        //Тестирование метода проверки пароля на соответствие требованиям isPassValid 
+        [TestMethod]
+        public void PassAtLeart8CharsIsValid()
+        {
+            // Arrange
+            string pass1 = "1234567y";
+            BankAccount account=new BankAccount("Jacob Johnson",11, pass1);
+
+            // Act
+            account.isPassValid(pass1);
+            bool isValid= account.IsValid;
+            // Assert
+            Assert.IsTrue(isValid);
+        }
+    }
+}
